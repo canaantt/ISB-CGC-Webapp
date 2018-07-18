@@ -224,7 +224,8 @@
                 max-height: 300px
                 .tokenfield
                     &.form-control
-                        max-height: 49px
+                        max-height: 35px
+                        padding: 5px 2px
                     span
                         input
                             width: 100% !important
@@ -238,11 +239,18 @@
                 padding: 10px 0px 10px 0px
             .list-item
                 border: none
-            .spec-molecular-attrs
-                min-height: 500px
+        .group-filter-list
+            background-color: $bg-color
+            padding: 10px !important
+            border-radius: 4px
+            &-label
+                color: $isb-primary
+                padding-right: 5px
+            &-caption
+                font-size: .8em
+                color: $isb-dark
 
     .filter-label:hover
-        //background-color: $primary-color-light
         a:hover
             text-decoration: none
     #filter-list-div
@@ -594,8 +602,6 @@
 
 .d3-tip
     background-color: rgba($tooltip-color, 0.8)
-
-    //border: 1px solid $nav-bg
     border-radius: 3px
     color: #fff
     font-family: sans-serif
@@ -609,9 +615,10 @@
 .bq-name
     text-overflow: ellipsis
     overflow: hidden
-.bq-label
-    padding-left: 0px
-    margin: 10px 0 0 0
+    white-space: nowrap
+    padding: 2px
+.bq-table-display
+    font-style: italic
 
 #file-upload-btn
     padding-left: 0px

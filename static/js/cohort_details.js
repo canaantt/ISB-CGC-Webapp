@@ -139,16 +139,19 @@ require([
             });
             $('#p-'+activeProgram+'-paste-in-genes-tokenfield').attr('placeholder',"");
             $('#p-'+activeProgram+'-paste-in-genes-tokenfield').attr('disabled','disabled');
-
-            check_for_filter_build(geneListField);
+            $('#p-'+activeProgram+'-heading-sel-molecular-attr-cat').removeClass('hidden');
+            $('#p-'+activeProgram+'-sel-molecular-attr-cat').removeClass('hidden');
+            $('#p-'+activeProgram+'-paste-in-genes-tokenfield').attr('token-label');
+            //check_for_filter_build(geneListField);
 
         }).on('tokenfield:removedtoken', function(event) {
             $('#p-'+activeProgram+'-paste-in-genes-tokenfield').attr('placeholder',"Enter a gene's name");
             $('#p-'+activeProgram+'-paste-in-genes-tokenfield').removeAttr('disabled');
+            $('#p-'+activeProgram+'-heading-sel-molecular-attr-cat').addClass('hidden');
+            $('#p-'+activeProgram+'-sel-molecular-attr-cat').addClass('hidden');
             if ($('div.token.invalid.error').length < 1) {
                 $('.helper-text__invalid').hide();
             }
-
             $(program_selector+' .build-mol-filter').attr("disabled","disabled");
 
         }).on('tokenfield:edittoken',function(e){
@@ -257,21 +260,41 @@ require([
             element.parents('.list').find('.build-mol-filter').attr('disabled', 'disabled');
         }
     };
-    
+
+    var check_for_comb_operand = function(){
+        var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
+        console.log("check for commb operand");
+        console.log(SELECTED_FILTERS[prog_id]);
+        if(SELECTED_FILTERS[prog_id] && Object.keys(SELECTED_FILTERS[prog_id]).length> 0){
+            $('#p-'+prog_id +'-mut-filter-combine-div').removeClass('hidden');
+        }
+        else{
+            $('#p-'+prog_id +'-mut-filter-combine-div').addClass('hidden');
+        }
+    };
+
     var clear_mol_filters = function(btn) {
         btn.siblings('.build-mol-filter').attr('disabled','disabled');
-        btn.parents('.list').find('.mutation-build').val('HG19');
+        btn.parents('.list').find('.mutation-build').val("label");
         btn.parents('.list').find('.mutation-build').trigger('change');
         btn.parents('.list').find('.sel-gene a.close').click();
         btn.parents('.list').find('.mutation-category-selector').val("label");
         btn.parents('.list').find('.spec-molecular-attrs input').prop("checked",false);
         btn.parents('.list').find('.inversion-checkbox').prop('checked',false);
-        btn.parents('.list').find('.spec-molecular-attrs ul').hide();
+        btn.parents('.list').find('.spec-molecular-attrs-div').addClass('hidden');
     };
 
     $('.tab-content').on('change', '.mutation-build', function(e){
-        $(this).siblings().find('.bq-table-display').text($(this).find(':selected').data('bq-table'));
-        $(this).siblings().find('.bq-table-display').attr('title',$(this).find(':selected').data('bq-table'));
+        if($(this).find(':selected').val() != 'label'){
+            $(this).parents('.sel-build').find('.bq-table-display').text($(this).find(':selected').data('bq-table'));
+            $(this).parents('.sel-build').find('.bq-table-display').attr('title',$(this).find(':selected').data('bq-table'));
+            $(this).parents('.sel-build').find('.bq-name').removeClass('hidden');
+            $(this).parents('.list').find('.sel-gene-div').removeClass('hidden');
+        }
+        else{
+            $(this).parents('.sel-build').find('.bq-name').addClass('hidden');
+            $(this).parents('.list').find('.sel-gene-div').addClass('hidden');
+        }
     });
 
     // Clears the current filter build (note this does NOT clear the filter
@@ -282,9 +305,9 @@ require([
 
     $('.tab-content').on('change', '.mutation-category-selector', function(){
         if($(this).find(':selected').val() == 'indv-selex') {
-            $(this).parents('.list').find('.spec-molecular-attrs ul').show();
+            $(this).parents('.list').find('.spec-molecular-attrs-div').removeClass('hidden');
         } else {
-            $(this).parents('.list').find('.spec-molecular-attrs ul').hide();
+            $(this).parents('.list').find('.spec-molecular-attrs-div').addClass('hidden');
         }
         check_for_filter_build($(this));
     });
@@ -296,10 +319,16 @@ require([
     $('.tab-content').on('change', '.mut-filter-combine',function(){
         var comb = $(this).find(':selected').val();
         var not_comb = $(this).find(':not(:selected)').val();
+        var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
+
         $('input[name="mut_filter_combine"]').val(comb);
         $('span.mol-filter').toggleClass('filter-combine-'+comb);
         $('span.mol-filter').toggleClass('filter-combine-'+not_comb);
-        update_displays();
+
+        //run the operand filter only if there's more than one mutation filter
+        if(SELECTED_FILTERS[prog_id] && Object.keys(SELECTED_FILTERS[prog_id]).length> 1){
+            update_displays();
+        }
     });
 
     $('.tab-content').on('click', '.build-mol-filter', function(){
@@ -313,7 +342,7 @@ require([
 
         if(createFormFilterSet.length <= 0) {
             $('#selected-filters').append('<p id="'+activeDataTab+'-filters"></p>');
-            createFormFilterSet = $('p#'+activeDataTab+'-filters')
+            createFormFilterSet = $('p#'+activeDataTab+'-filters');
             createFormFilterSet.append('<h5>'+(prog.data('prog-displ-name'))+'</h5>');
         } else {
             createFormFilterSet.show();
@@ -382,12 +411,14 @@ require([
                 createFormFilterSet.append(token.clone(true));
             }
         });
+
         clear_mol_filters($(this));
         if($(selFilterPanel+' .panel-body .mol-filter').length > 0) {
             $(selFilterPanel+' .panel-body .mol-filter-container').show();
         } else {
             $(selFilterPanel+' .panel-body .mol-filter-container').hide();
         }
+        check_for_comb_operand();
         update_displays();
     });
 
@@ -508,7 +539,7 @@ require([
             $('#create-cohort-modal input[type="submit"]').removeAttr('disabled');
         }
     };
-
+    /*
     $('.clear-filters').on('click', function() {
         var activeDataTab = $('.data-tab.active').attr('id');
         var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
@@ -517,12 +548,12 @@ require([
         $(this).parents('.data-tab').find('.filter-panel input:checked').each(function() {
             $(this).prop('checked', false);
         });
-
         delete SELECTED_FILTERS[prog_id];
 
         $('p#'+activeDataTab+'-filters span.'+filterType+'-token').remove();
+
         update_displays();
-    });
+    });*/
 
     $('button[data-target="#apply-edits-modal"]').on('click',function(e){
         // Clear previous 'bad name' alerts
@@ -897,6 +928,8 @@ require([
 
         $(program_data_selector + ' .clear-filters').on('click', function() {
             var filterType = $(this).attr('id').split('-clear-filters')[0];
+            var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
+
             $(this).parents('.selected-filters').find('.panel-body').empty();
             $(this).parents('.data-tab').find('.filter-panel input:checked').each(function() {
                 $(this).prop('checked', false);
@@ -904,9 +937,9 @@ require([
             if(filterType === 'isb-cgc-data') {
                 $('#paste-in-genes').siblings('div.token').find('a.close').trigger('click');
             }
-
+            SELECTED_FILTERS[prog_id]={};
             $('#create-cohort-form .form-control-static span.'+filterType+'-token').remove();
-
+            check_for_comb_operand();
             update_displays();
         });
 
@@ -1052,6 +1085,7 @@ require([
         (progCount > 1) ? $('#multi-prog-cohort-create-warn').show() : $('#multi-prog-cohort-create-warn').hide();
 
         update_displays(false,false,$(this).parent('span').data('prog-id'));
+        check_for_comb_operand();
         return false;
     });
 

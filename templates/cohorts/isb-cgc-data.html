@@ -117,17 +117,6 @@
                             </div>
                         </li>
                         <li class="list-group-item">
-                            <div class="list-item__heading" role="tab" id="p-{{ program.id }}-heading-and-or-filters">
-                                    Combine Mutation Filters with...
-                            </div>
-                            <div class="list-group-item__body">
-                                <select id="p-{{ program.id }}-mut-filter-combine" class="form-control mut-filter-combine" aria-labelledby="p-{{ program.id }}-heading-and-or-filters">
-                                    <option value="and" title="Filters will be combined using AND" selected>AND (Require all filters)</option>
-                                    <option value="or" title="Filters will be combined using OR">OR (Require one or more filters)</option>
-                                </select>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
                             <div class="list-group-item__heading" role="tab" id="p-{{ program.id }}-heading-gene-mutation-status">
                                 <a class="collapse-gene-mutation-status" role="button" data-toggle="collapse" data-parent="#data-type-accordion" href="#p-{{ program.id }}-collapse-gene-mutation-status" aria-expanded="false" aria-controls="collapse-gene-mutation-status">
                                     <i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i> GENE MUTATION STATUS
@@ -136,95 +125,124 @@
                             <div id="p-{{ program.id }}-collapse-gene-mutation-status" class="list-group-item__body collapse cohort-feature-select-block gene-mutation-status" role="tabpanel"
                                  aria-labelledby="p-{{ program.id }}-heading-gene-mutation-status" data-feature-name="gene-mutation-status" data-feature-displ-name="Gene Mutation Status" data-feature-type="molecular">
                                 <ul class="list">
+                                    <li class="list-item">
+                                        <div id="p-{{ program.id }}-mut-filter-combine-div" class="hidden">
+                                            <div id="p-{{ program.id }}-heading-and-or-filters">
+                                                Combine Mutation Filters with...
+                                            </div>
+                                            <div class="list-group-item__body">
+                                                <select id="p-{{ program.id }}-mut-filter-combine"
+                                                        class="form-control mut-filter-combine"
+                                                        aria-labelledby="p-{{ program.id }}-heading-and-or-filters">
+                                                    <option value="and" title="Filters will be combined using AND" selected>
+                                                        AND (Require all filters)
+                                                    </option>
+                                                    <option value="or" title="Filters will be combined using OR">OR (Require
+                                                        one or more filters)
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul class="group-filter-list list">
+                                    <li class="list-item">
+                                        <div class="group-filter-list-label" title="Make this filter a 'negative' filter, eg. 'TP53 does not have mutations'">
+                                            Negative Filter? <input class="inversion-checkbox" type="checkbox" name="invert-filter" />
+                                        </div>
+                                        <div class="group-filter-list-caption">*Click this option to exclude the gene mutation</div>
+                                    </li>
                                     {% if molecular_attr_builds %}
                                         <li class="list-item">
-                                            <button class="btn btn-primary build-mol-filter" disabled title="Choose a Gene and Mutation Type, then click this button to create the filter.">Build Filter</button>
-                                            <button class="btn btn-primary clear-mol-filter" title="Clear the current filter settings (does not delete a filter from your Selected Filters).">Clear</button>
-                                        </li>
-                                        <li class="list-item">
-                                            <label title="Make this filter a 'negative' filter, eg. 'TP53 does not have mutations'">
-                                                <input class="inversion-checkbox" type="checkbox" name="invert-filter" /> Negative Filter?
-                                            </label>
-                                        </li>
-                                        <li class="list-item">
                                             <!-- build selector -->
-                                            <div class="list-item__heading" role="tab" id="p-{{ program.id }}-heading-sel-build">
-                                                Genomic Build
-                                            </div>
-                                            <div id="p-{{ program.id }}-sel-build" class="list-group-item__body sel-build" role="tabpanel" aria-labelledby="p-{{ program.id }}-heading-sel-build">
-                                                {% if molecular_attr_builds|length > 1 %}
-                                                    <select id="p-{{ program.id }}-mutation-build" class="form-control mutation-build" aria-labelledby="p-{{ program.id }}-heading-sel-build">
-                                                        {% for build in molecular_attr_builds %}
-                                                            <option value="{{ build.value }}" data-bq-table="{{ build.displ_text }}" title="BQ table: {{ build.displ_text }}" {% if build.value == 'HG19' %}selected{% endif %}>{{ build.value }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    {% for build in molecular_attr_builds %}
-                                                        {% if build.value == 'HG19' %}
-                                                            <div class="bq-name"><span class="label bq-label">BQ Table:</span> <span class="bq-table-display" title="{{ build.displ_text }}" id="p-{{ program.id }}-bq-table">{{ build.displ_text }}</span></div>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% else %}
-                                                    <span>{{ molecular_attr_builds.0.value }}</span>
-                                                    <div class="bq-name"><span class="label bq-label">BQ Table:</span> <span class="bq-table-display" title="{{ molecular_attr_builds.0.displ_text }}" id="p-{{ program.id }}-bq-table">{{ molecular_attr_builds.0.displ_text }}</span></div>
-                                                {% endif %}
+                                            <div>
+                                                <div class="group-filter-list-label" id="p-{{ program.id }}-heading-sel-build">
+                                                    Genomic Build
+                                                </div>
+                                                <div id="p-{{ program.id }}-sel-build" class="list-group-item__body sel-build" role="tabpanel" aria-labelledby="p-{{ program.id }}-heading-sel-build">
+                                                    {% if molecular_attr_builds|length > 0 %}
+                                                        <select id="p-{{ program.id }}-mutation-build" class="form-control mutation-build" aria-labelledby="p-{{ program.id }}-heading-sel-build">
+                                                            <option value="label" disabled selected> -- Select Genomic Build -- </option>
+                                                            {% for build in molecular_attr_builds %}
+                                                                <option value="{{ build.value }}" data-bq-table="{{ build.displ_text }}" title="BQ table: {{ build.displ_text }}">{{ build.value }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="hidden bq-name group-filter-list-caption">BQ Table:<span class="bq-table-display" title="{{ build.displ_text }}" id="p-{{ program.id }}-bq-table">{{ build.displ_text }}</span></div>
+                                                    {% else %}
+
+                                                        <span>No Genomic Build to Apply</span>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </li>
                                     {% endif %}
-                                    <li class="list-item">
+
+                                    <li class="list-item ">
                                         <!-- gene selector -->
-                                        <div class="list-item__heading" role="tab" id="p-{{ program.id }}-heading-sel-gene">
+                                        <div class="sel-gene-div hidden">
+                                            <div class="group-filter-list-label" role="tab" id="p-{{ program.id }}-heading-sel-gene">
                                                 Gene
-                                        </div>
-                                        <div id="p-{{ program.id }}-sel-gene" class="list-group-item__body sel-gene" role="tabpanel" aria-labelledby="p-{{ program.id }}-heading-sel-gene">
-                                            <div id="p-{{ program.id }}-tokenfield-holder">
-                                                <textarea name="genes-list" class="form-control tokenfield paste-in-genes" id="p-{{ program.id }}-paste-in-genes" aria-labelledby="p-{{ program.id }}-heading-sel-gene" placeholder="Enter a gene's name" required></textarea>
                                             </div>
-                                            <div class="tokenfield">
-                                                <p class="helper-text__invalid" style="display: none;"><i class="fa fa-exclamation-circle"></i> The following <span class="token invalid">items</span>were not recognized as gene identifiers. You may either correct or delete these items -- or use them as-is.</p>
+                                            <div id="p-{{ program.id }}-sel-gene" class="list-group-item__body sel-gene" role="tabpanel" aria-labelledby="p-{{ program.id }}-heading-sel-gene">
+                                                <div id="p-{{ program.id }}-tokenfield-holder">
+                                                    <textarea name="genes-list" class="form-control tokenfield paste-in-genes" id="p-{{ program.id }}-paste-in-genes" aria-labelledby="p-{{ program.id }}-heading-sel-gene" placeholder="Enter a gene's name" required></textarea>
+                                                </div>
+                                                <div class="tokenfield">
+                                                    <p class="helper-text__invalid" style="display: none;"><i class="fa fa-exclamation-circle"></i> The following <span class="token invalid">items</span>were not recognized as gene identifiers. You may either correct or delete these items -- or use them as-is.</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </li>
-                                    <li class="list-item">
+
+                                    <li class="list-item ">
                                         <!-- Mutation Category Selector -->
-                                        <div class="list-item__heading" role="tab" id="p-{{ program.id }}-heading-sel-molecular-attr-cat">
-                                                Mutation Type Categories
-                                        </div>
-                                        <div id="p-{{ program.id }}-sel-molecular-attr-cat" class="list-group-item__body cohort-feature-select-block" role="tabpanel"
-                                             aria-labelledby="p-{{ program.id }}-heading-sel-molecular-attr-cat" data-feature-displ-name="Mutation Category" data-feature-id="category"
-                                             data-feature-name="mutation-category" data-feature-type="molecular">
-                                            <select id="p-{{ program.id }}-mutation-category" class="mutation-category-selector form-control" aria-labelledby="p-{{ program.id }}-heading-sel-molecular-attr-cat">
-                                                <option value="label" disabled selected>-- Select a Category --</option>
-                                                <option value="any" data-value-displ-name="Any" data-value-name="Any" data-value-id="any">Any</option>
-                                                {% for cat in molecular_attr.categories %}
-                                                    <option value="{{ cat.value }}" data-value-displ-name="{{ cat.name }}" data-value-name="{{ cat.name }}"
-                                                            data-value-id="{% if cat.id %}{{ cat.id }}{% else %}{{ cat.value }}{% endif %}">{{ cat.name }}</option>
-                                                {% endfor %}
-                                                <option value="indv-selex">Individual Selection</option>
-                                            </select>
+                                        <div class="mut-cat-div">
+                                            <div class="group-filter-list-label hidden" role="tab" id="p-{{ program.id }}-heading-sel-molecular-attr-cat">
+                                                    Mutation Type Categories
+                                            </div>
+                                            <div id="p-{{ program.id }}-sel-molecular-attr-cat" class="list-group-item__body cohort-feature-select-block hidden" role="tabpanel"
+                                                 aria-labelledby="p-{{ program.id }}-heading-sel-molecular-attr-cat" data-feature-displ-name="Mutation Category" data-feature-id="category"
+                                                 data-feature-name="mutation-category" data-feature-type="molecular">
+                                                <select id="p-{{ program.id }}-mutation-category" class="mutation-category-selector form-control " aria-labelledby="p-{{ program.id }}-heading-sel-molecular-attr-cat">
+                                                    <option value="label" disabled selected>-- Select a Category --</option>
+                                                    <option value="any" data-value-displ-name="Any" data-value-name="Any" data-value-id="any">Any</option>
+                                                    {% for cat in molecular_attr.categories %}
+                                                        <option value="{{ cat.value }}" data-value-displ-name="{{ cat.name }}" data-value-name="{{ cat.name }}"
+                                                                data-value-id="{% if cat.id %}{{ cat.id }}{% else %}{{ cat.value }}{% endif %}">{{ cat.name }}</option>
+                                                    {% endfor %}
+                                                    <option value="indv-selex">Individual Selection</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </li>
+
                                     <li class="list-item">
                                         <!-- Specific Mutation Type Checkboxes -->
-                                        <div class="list-item__heading" role="tab" id="p-{{ program.id }}-heading-spec-molecular-attrs">
-                                            <span title="Choose the 'Individual Selection' category to enable this section">Individual Mutation Types</span>
+                                        <div class="spec-molecular-attrs-div hidden">
+                                            <div class="group-filter-list-label" id="p-{{ program.id }}-heading-spec-molecular-attrs">
+                                                <span title="Choose the 'Individual Selection' category to enable this section">Individual Mutation Types</span>
+                                            </div>
+                                            <div id="p-{{ program.id }}-spec-molecular-attrs" class="list-group-item__body cohort-feature-select-block spec-molecular-attrs" role="tabpanel"
+                                                 aria-labelledby="p-{{ program.id }}-heading-spec-molecular-attrs" data-feature-displ-name="Specific Mutation Type" data-feature-name="specific-mutation"
+                                                 data-feature-id="specific" data-feature-type="molecular">
+                                                <ul class="mol-checkbox-list" id="p-{{ program.id }}-{{ attr.value }}">
+                                                    {% for attr in molecular_attr.attrs %}
+                                                        <li class="checkbox">
+                                                            <label>
+                                                                <input class="mutation-checkbox" type="checkbox" name="elements-selected" data-value-name="{{ attr.value }}"
+                                                                       data-value-id="{% if attr.id %}{{ attr.id }}{% else %}{{ attr.value }}{% endif %}"
+                                                                       data-value-displ-name="{{ attr.displ_name }}" data-category="{{ attr.category }}">
+                                                                {{ attr.displ_name }} <!-- <span class="count">({{ attr.count }})</span> -->
+                                                            </label>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <span class="heading-note" id="p-{{ program.id }}-spec-mol-attr-heading-note">Choose the 'Individual Selection' category to enable</span>
-                                        <div id="p-{{ program.id }}-spec-molecular-attrs" class="list-group-item__body cohort-feature-select-block spec-molecular-attrs" role="tabpanel"
-                                             aria-labelledby="p-{{ program.id }}-heading-spec-molecular-attrs" data-feature-displ-name="Specific Mutation Type" data-feature-name="specific-mutation"
-                                             data-feature-id="specific" data-feature-type="molecular">
-                                            <ul class="mol-checkbox-list" id="p-{{ program.id }}-{{ attr.value }}" style="display: none;">
-                                                {% for attr in molecular_attr.attrs %}
-                                                    <li class="checkbox">
-                                                        <label>
-                                                            <input class="mutation-checkbox" type="checkbox" name="elements-selected" data-value-name="{{ attr.value }}"
-                                                                   data-value-id="{% if attr.id %}{{ attr.id }}{% else %}{{ attr.value }}{% endif %}"
-                                                                   data-value-displ-name="{{ attr.displ_name }}" data-category="{{ attr.category }}">
-                                                            {{ attr.displ_name }} <!-- <span class="count">({{ attr.count }})</span> -->
-                                                        </label>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
+                                    </li>
+                                    <li class="list-item">
+                                        <button class="btn btn-primary build-mol-filter" disabled title="Choose a Gene and Mutation Type, then click this button to create the filter.">Build Filter</button>
+                                        <button class="btn btn-primary clear-mol-filter" title="Clear the current filter settings (does not delete a filter from your Selected Filters).">Clear</button>
                                     </li>
                                 </ul>
                             </div>
