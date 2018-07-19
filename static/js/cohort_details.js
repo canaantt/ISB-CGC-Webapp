@@ -152,6 +152,10 @@ require([
             if ($('div.token.invalid.error').length < 1) {
                 $('.helper-text__invalid').hide();
             }
+            //clear mutation category or individual mutation type selection set by user
+            $(this).parents('.list').find('.mutation-category-selector').val("label");
+            $(this).parents('.list').find('.spec-molecular-attrs input').prop("checked",false);
+            $(this).parents('.list').find('.spec-molecular-attrs-div').addClass('hidden');
             $(program_selector+' .build-mol-filter').attr("disabled","disabled");
 
         }).on('tokenfield:edittoken',function(e){
@@ -261,18 +265,6 @@ require([
         }
     };
 
-    var check_for_comb_operand = function(){
-        var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
-        console.log("check for commb operand");
-        console.log(SELECTED_FILTERS[prog_id]);
-        if(SELECTED_FILTERS[prog_id] && Object.keys(SELECTED_FILTERS[prog_id]).length> 0){
-            $('#p-'+prog_id +'-mut-filter-combine-div').removeClass('hidden');
-        }
-        else{
-            $('#p-'+prog_id +'-mut-filter-combine-div').addClass('hidden');
-        }
-    };
-
     var clear_mol_filters = function(btn) {
         btn.siblings('.build-mol-filter').attr('disabled','disabled');
         btn.parents('.list').find('.mutation-build').val("label");
@@ -307,6 +299,8 @@ require([
         if($(this).find(':selected').val() == 'indv-selex') {
             $(this).parents('.list').find('.spec-molecular-attrs-div').removeClass('hidden');
         } else {
+            //reset individual mutation type selection
+            $(this).parents('.list').find('.spec-molecular-attrs input').prop("checked",false);
             $(this).parents('.list').find('.spec-molecular-attrs-div').addClass('hidden');
         }
         check_for_filter_build($(this));
@@ -321,7 +315,7 @@ require([
         var not_comb = $(this).find(':not(:selected)').val();
         var prog_id = $('.data-tab.active .filter-panel').data('prog-id');
 
-        $('input[name="mut_filter_combine"]').val(comb);
+        $('input[name="mut_filter_combine"]').val(comb.toUpperCase());
         $('span.mol-filter').toggleClass('filter-combine-'+comb);
         $('span.mol-filter').toggleClass('filter-combine-'+not_comb);
 
@@ -349,7 +343,7 @@ require([
         }
 
         if($(selFilterPanel + ' .mol-filter-container').length <= 0) {
-            $(selFilterPanel + ' .panel-body').append($('<span class="mol-filter-container">'));
+            $(selFilterPanel + ' .panel-body').append($('<div class="mol-filter-container">'));
         }
 
         var tokenProgDisplName = prog.data('prog-displ-name'),
@@ -418,7 +412,6 @@ require([
         } else {
             $(selFilterPanel+' .panel-body .mol-filter-container').hide();
         }
-        check_for_comb_operand();
         update_displays();
     });
 
@@ -939,7 +932,6 @@ require([
             }
             SELECTED_FILTERS[prog_id]={};
             $('#create-cohort-form .form-control-static span.'+filterType+'-token').remove();
-            check_for_comb_operand();
             update_displays();
         });
 
@@ -1085,7 +1077,6 @@ require([
         (progCount > 1) ? $('#multi-prog-cohort-create-warn').show() : $('#multi-prog-cohort-create-warn').hide();
 
         update_displays(false,false,$(this).parent('span').data('prog-id'));
-        check_for_comb_operand();
         return false;
     });
 

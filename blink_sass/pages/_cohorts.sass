@@ -32,26 +32,25 @@
                 font-size: 100px
 
     .selected-filters
-        .mol-filter.filter-combine-or:not(:first-child):before
-            content: "OR"
-            margin-right: 5px
-        .mol-filter.filter-combine-and:not(:first-child):before
-            content: "AND"
-            margin-right: 5px
-        .mol-filter-container:not(:only-child):before
-            content: "("
-            margin-left: 5px
-        .mol-filter-container:not(:only-child):not(:first-child):before
-            content: "AND ("
-            margin-left: 5px
-        .mol-filter-container:not(:only-child):after
-            content: ")"
-            margin-right: 5px
-        .mol-filter-container:not(:only-child):not(:last-child):after
-            content: ") AND"
-            margin-right: 5px
+        .mol-filter
+            color: $isb-primary
+            &.filter-combine-or:not(:first-child):before
+                content: "OR"
+                font-weight: bolder
+                font-size: .9em
+                margin: 0 1px
+            &.filter-combine-and:not(:first-child):before
+                content: "AND"
+                font-weight: bolder
+                font-size: .9em
+                margin: 0 1px
+            &-container
+                display: inline-block
+                background-color: darken($token-bg-color, 15%)
+                border-radius: 15px
         .label
             background-color: $token-bg-color
+            margin: 3px
             &:hover
                 background-color: $token-bg-color-hover
 
@@ -458,7 +457,6 @@
             display: none
         #selected-files
             height: 11em
-            border: none
             border: none
             -webkit-box-shadow: none
             padding: 0

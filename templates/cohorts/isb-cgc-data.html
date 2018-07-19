@@ -126,22 +126,20 @@
                                  aria-labelledby="p-{{ program.id }}-heading-gene-mutation-status" data-feature-name="gene-mutation-status" data-feature-displ-name="Gene Mutation Status" data-feature-type="molecular">
                                 <ul class="list">
                                     <li class="list-item">
-                                        <div id="p-{{ program.id }}-mut-filter-combine-div" class="hidden">
-                                            <div id="p-{{ program.id }}-heading-and-or-filters">
-                                                Combine Mutation Filters with...
-                                            </div>
-                                            <div class="list-group-item__body">
-                                                <select id="p-{{ program.id }}-mut-filter-combine"
-                                                        class="form-control mut-filter-combine"
-                                                        aria-labelledby="p-{{ program.id }}-heading-and-or-filters">
-                                                    <option value="and" title="Filters will be combined using AND" selected>
-                                                        AND (Require all filters)
-                                                    </option>
-                                                    <option value="or" title="Filters will be combined using OR">OR (Require
-                                                        one or more filters)
-                                                    </option>
-                                                </select>
-                                            </div>
+                                        <div id="p-{{ program.id }}-heading-and-or-filters">
+                                            Combine Mutation Filters with...
+                                        </div>
+                                        <div class="list-group-item__body">
+                                            <select id="p-{{ program.id }}-mut-filter-combine"
+                                                    class="form-control mut-filter-combine"
+                                                    aria-labelledby="p-{{ program.id }}-heading-and-or-filters">
+                                                <option value="and" title="Filters will be combined using AND" selected>
+                                                    AND (Require all filters)
+                                                </option>
+                                                <option value="or" title="Filters will be combined using OR">OR (Require
+                                                    one or more filters)
+                                                </option>
+                                            </select>
                                         </div>
                                     </li>
                                 </ul>
